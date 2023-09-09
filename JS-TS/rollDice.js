@@ -1,7 +1,8 @@
 function shuffle(dice, resultCount, resultElementID) {
     var repeat = 10;
     var delay = 70;
-    dice = dice.includes(":") ? document.getElementById(dice.replace(/:/g, "")).value : dice;
+    console.log(dice);
+    dice = dice.includes(':') ? document.getElementById(dice.replace(/:/g, "")).value : dice;
     resultCount = resultCount.includes(":") ? document.getElementById(resultCount.replace(/:/g, "")).value : resultCount;
     for (var index = 0; index < repeat; index++) {
         setTimeout(function () {
@@ -16,32 +17,24 @@ function shuffle(dice, resultCount, resultElementID) {
     }
 }
 function rollDice(dice) {
-    var regEscape = function (v) { return v.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); };
-    var diceFormula = {
-        count: 0,
-        sides: 0,
-        keep: "",
-        keepCount: 0,
-        operation: "",
-        number: 0,
-    };
+    dice.toLowerCase();
     // *********** Get all values ***********
     var splitForKeep = dice.split("k");
-    var splitForDice = splitForKeep[0].split(new RegExp(regEscape("d"), "ig"));
+    var splitForDice = splitForKeep[0].split(new RegExp("d", "ig"));
     var splitForOperations = dice.replace(splitForKeep[0], "");
     var operation = "";
     var number = NaN;
     var foundOperation;
     if (splitForOperations) {
         foundOperation = findOperation(splitForOperations);
-        operation = diceFormula.operation = foundOperation;
+        operation = foundOperation;
         var operationFilter = foundOperation ? splitForOperations.split(foundOperation)[1] : "";
-        number = diceFormula.number = operationFilter ? parseInt(operationFilter.search(/\d+/)[0]) : 0;
+        number = operationFilter ? parseInt(operationFilter.search(/\d+/)[0]) : 0;
     }
-    var count = diceFormula.count = splitForDice[0] === null || splitForDice[0] === "0" ? 1 : parseInt(splitForDice[0]);
-    var sides = diceFormula.sides = parseInt(splitForDice[1]);
-    var keep = diceFormula.keep = splitForOperations.includes("l") ? "l" : splitForOperations.includes("h") ? "h" : "";
-    var keepCount = diceFormula.keepCount = splitForOperations ? splitForOperations.replace(String(number), "").search(/\d+/)[0] : 0;
+    var count = splitForDice[0] === null || splitForDice[0] === "0" ? 1 : parseInt(splitForDice[0]);
+    var sides = parseInt(splitForDice[1]);
+    var keep = splitForOperations.search("l") ? "l" : splitForOperations.search("h") ? "h" : "";
+    var keepCount = splitForOperations ? splitForOperations.replace(String(number), "").search(/\d+/)[0] : 0;
     // 6d20.max3
     // *********** Process values ***********
     var rolled = [];
@@ -52,12 +45,10 @@ function rollDice(dice) {
         var indexToRemove = NaN;
         for (var index = 0; index = (rolled.length - keepCount); index++) {
             if (keep === "h") {
-                var smallest = Math.min.apply(Math, rolled);
-                indexToRemove = rolled.indexOf(smallest);
+                indexToRemove = rolled.indexOf(Math.min.apply(Math, rolled));
             }
             else if (keep === "l") {
-                var largest = Math.max.apply(Math, rolled);
-                indexToRemove = rolled.indexOf(largest);
+                indexToRemove = rolled.indexOf(Math.max.apply(Math, rolled));
             }
             rolled.splice(indexToRemove, 1);
         }
@@ -67,9 +58,9 @@ function rollDice(dice) {
     calculated = operation === "-" ? calculated - number : operation === "+" ? calculated + number : calculated;
     return calculated;
 }
-function findOperation(string) {
-    string = string ? string : "";
+function findOperation(input) {
+    input = input ? input : "";
     var operations = ["-", "+"];
-    var ouput = operations[operations.findIndex(function (v) { return string.includes(v); })];
-    return ouput;
+    var output = operations[operations.findIndex(function (v) { return input.search(v); })];
+    return output;
 }

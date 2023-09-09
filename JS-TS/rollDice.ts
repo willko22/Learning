@@ -3,7 +3,9 @@ function shuffle(dice: string, resultCount: any, resultElementID: string){
     const repeat = 10
     const delay = 70
 
-    dice        = dice.includes(":")        ? (<HTMLInputElement> document.getElementById(dice.replace(/:/g, ""))).value        : dice;
+    console.log(dice);
+    
+    dice        = dice.includes(':')        ? (<HTMLInputElement> document.getElementById(dice.replace(/:/g, ""))).value        : dice;
     resultCount = resultCount.includes(":") ? (<HTMLInputElement> document.getElementById(resultCount.replace(/:/g, ""))).value : resultCount;
 
     
@@ -14,7 +16,7 @@ function shuffle(dice: string, resultCount: any, resultElementID: string){
                 result = result + " " + rollDice(dice)
             };
             // getStats(dice, resultCount, resultElementID);
-            (<HTMLElement> document.getElementById(resultElementID)).innerHTML = "You Rolled: " + result;    
+            document.getElementById(resultElementID).innerHTML = "You Rolled: " + result;    
         }, delay * index );
     }
 
@@ -23,20 +25,11 @@ function shuffle(dice: string, resultCount: any, resultElementID: string){
 
 function rollDice(dice: string) {
 
-    const regEscape = v => v.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    dice.toLowerCase()
     
-    const diceFormula = { 
-        count: 0,
-        sides: 0,
-        keep: "",
-        keepCount: 0,
-        operation: "",
-        number: 0,
-    };
-
     // *********** Get all values ***********
     let splitForKeep            = dice.split("k")
-    let splitForDice            = splitForKeep[0].split(new RegExp(regEscape("d"), "ig"));
+    let splitForDice            = splitForKeep[0].split(new RegExp("d", "ig"));
     let splitForOperations      = dice.replace(splitForKeep[0], "")
 
 
@@ -45,15 +38,15 @@ function rollDice(dice: string) {
     var foundOperation  : string
     if (splitForOperations){
         foundOperation   = findOperation(splitForOperations)
-        operation   = diceFormula.operation   = foundOperation
+        operation   = foundOperation
         const operationFilter = foundOperation ? splitForOperations.split(foundOperation)[1] : ""
-        number      = diceFormula.number      = operationFilter ? parseInt(operationFilter.search(/\d+/)[0]) : 0
+        number      = operationFilter ? parseInt(operationFilter.search(/\d+/)[0]) : 0
     }
     
-    let count:      number       = diceFormula.count         = splitForDice[0] === null || splitForDice[0] === "0" ? 1 : parseInt(splitForDice[0])
-    let sides:      number       = diceFormula.sides         = parseInt(splitForDice[1])
-    let keep:       string       = diceFormula.keep          = splitForOperations.includes("l") ? "l" : splitForOperations.includes("h") ? "h" : ""
-    let keepCount:  number       = diceFormula.keepCount     = splitForOperations ? splitForOperations.replace(String(number), "").search(/\d+/)[0] : 0
+    let count:      number       = splitForDice[0] === null || splitForDice[0] === "0" ? 1 : parseInt(splitForDice[0])
+    let sides:      number       = parseInt(splitForDice[1])
+    let keep:       string       = splitForOperations.search("l") ? "l" : splitForOperations.search("h") ? "h" : ""
+    let keepCount:  number       = splitForOperations ? splitForOperations.replace(String(number), "").search(/\d+/)[0] : 0
 
     // 6d20.max3
     // *********** Process values ***********
@@ -67,13 +60,9 @@ function rollDice(dice: string) {
         let indexToRemove: number = NaN
         for (let index = 0; index = (rolled.length - keepCount) ; index++) {
             if (keep === "h"){
-                let smallest: number = Math.min(...rolled)
-                indexToRemove = rolled.indexOf(smallest)
-                
+                indexToRemove = rolled.indexOf(Math.min(...rolled))
             } else if (keep === "l"){
-                let largest: number = Math.max(...rolled)
-                indexToRemove = rolled.indexOf(largest)
-
+                indexToRemove = rolled.indexOf(Math.max(...rolled))
             }
 
             rolled.splice(indexToRemove, 1)
@@ -87,11 +76,11 @@ function rollDice(dice: string) {
     return calculated
 }
 
-function findOperation(string: string) {
-    string = string ? string : ""
+function findOperation(input: string) {
+    input = input ? input : ""
     const operations  = ["-", "+"];
     
-    let ouput  = operations[operations.findIndex(v => string.includes(v))];
+    let output  = operations[operations.findIndex(v => input.search(v))];
     
-    return ouput
+    return output
 }
