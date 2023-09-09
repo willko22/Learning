@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <script src="../JS-TS/rollDice.js"></script>
+        <title>DnD Dice Roller</title>
+    </head>
+    <body>
+        <h1>Roll Dice</h1>
+
+        <label for="diceType">Dice</label>
+        <input type="text" id="diceType" name="diceType" value="6d20kl3"> <br>
+        <label for="resultCount">Result Count</label>
+        <input type="text" id="resultCount" name="resultCount" value="1">
+
+        <Button onclick="shuffle(':diceType',':resultCount', 'diceResult')">Roll Dice</Button> <br><br>
+        <p id="diceResult"></p>
+        
+        <br> <br>
+
+        <Button onclick="shuffle('4d6kh3 ', '6', 'statsResult')">Roll Stats</Button>
+        <p id="statsResult"></p>
+
+    </body>
+</html>
